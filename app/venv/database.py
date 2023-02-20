@@ -1,7 +1,13 @@
 import motor.motor_asyncio
 from model import airportData, userModel
+from dotenv import load_dotenv
+import os
 
-client = motor.motor_asyncio.AsyncIOMotorClient('mongodb://localhost:27017') #MongoDB connection URI
+
+load_dotenv()
+MONGODB_CONNECTION_URI = os.getenv('MONGODB_CONNECTION_URI')
+
+client = motor.motor_asyncio.AsyncIOMotorClient(MONGODB_CONNECTION_URI) #MongoDB connection URI
 database = client.redisfastapi
 airportCollection = database.airport
 usersCollection = database.users
@@ -19,6 +25,10 @@ async def getAllData(user):
         data.append(airportData(**doc))
     return data
 
+async def deleteAllData(user):
+    result = await airportCollection.delete_many({"user":user})
+    return result
+
 async def addToFavorites(airportData):
     await airportCollection.insert_one(airportData)
     data = await findInFavorites(airportData["user"], airportData["icao"])
@@ -27,6 +37,7 @@ async def addToFavorites(airportData):
 async def removeFromFavorites(user, icao):
     await airportCollection.delete_one({"user":user, "icao":icao})
     return True
+
 
 
 async def createUser(model):

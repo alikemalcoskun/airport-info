@@ -1,11 +1,11 @@
 from datetime import timedelta
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from routers import user, data
 import json
 from model import airportData, userModel, showUserModel, login, showAirportData
-import redis
 import redisConfig
 import redisCache
 import airport
@@ -15,9 +15,8 @@ from auth import Hash, Token, oauth2
 r = redisConfig.redisConnect()
 
 
-app = FastAPI(title="AirportInfo",)
+app = FastAPI(title="AirportInfo", )
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/user/login")
 
 origins = ['*']
 
@@ -28,6 +27,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+API_PREFIX = "/api/v1"
+app.include_router(user.router, prefix=API_PREFIX)
+app.include_router(data.router, prefix=API_PREFIX)
+
+
+"""
 @app.post('/api/v1/user/create-user', response_model=showUserModel, tags=['User'])
 async def createUser(model: userModel):
     hashedPassword = Hash.getHashedPassword(model.password)
@@ -168,3 +174,5 @@ async def removeFromFavorites(icao, getCurrentUser: userModel = Depends(oauth2.g
     data = await database.removeFromFavorites(username, icao)
     if not data: raise HTTPException(404)
     return data
+
+"""
