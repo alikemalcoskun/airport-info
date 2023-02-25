@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from fastapi import Depends, HTTPException
 from datetime import timedelta
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
-from model import userModel, showUserModel
+from model import userModel, showUserModel, changePasswordModel
 from auth import Hash, Token, oauth2
 import database
 
@@ -50,19 +50,19 @@ async def login(request: OAuth2PasswordRequestForm = Depends()):
 
 
 @router.put('/change-password', response_model=showUserModel)
-async def changePassword(username: str, password: str, newPassword: str, getCurrentUser: userModel = Depends(oauth2.getCurrentUser)):
-    currentUser = await database.getUser(username)
+async def changePassword(model: changePasswordModel, getCurrentUser: userModel = Depends(oauth2.getCurrentUser)):
+    currentUser = await database.getUser(model.username)
     if not currentUser: raise HTTPException(status_code=404, detail=f"Invalid User")
 
-    if not Hash.verifyPassword(currentUser['password'], password):
+    if not Hash.verifyPassword(currentUser['password'], model.password):
         raise HTTPException(status_code=404, detail=f"Invalid Password")
 
-    hashedPassword = Hash.getHashedPassword(newPassword)
+    hashedPassword = Hash.getHashedPassword(model.newPassword)
     result = await database.updateUser(currentUser['username'], updatedPassword=hashedPassword)
     if not result: raise HTTPException(400)
 
 
-    currentUser = await database.getUser(username)
+    currentUser = await database.getUser(model.username)
     return currentUser
 
 

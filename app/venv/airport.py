@@ -12,20 +12,18 @@ AIRPORTDB_API_KEY = os.getenv('AIRPORTDB_API_KEY')
 
 
 def getAirportInfo(icao, username):
-    return airportData(icao="LTFM", iata="IST", name="Istanbul Airport", user=username)
     
-    url = 'https://airportdb.io/api/v1/airport/{ICAO}?apiToken={apiToken}'.format(icao, AIRPORTDB_API_KEY)
+    url = 'https://airportdb.io/api/v1/airport/{}?apiToken={}'.format(icao, AIRPORTDB_API_KEY)
     response = requests.get(url)
     if not response: raise HTTPException(status_code=404, detail=f"Cannot connect to API.")
     data = response.json()
-    result = airportData(icao=data['icao'], 
-    iata=data['iata'], 
-    name=data['name'],)
-    """
+    result = airportData(user=username,
+    icao=data['icao_code'], 
+    iata=data['iata_code'], 
+    name=data['name'],
     type=data['type'],
-    country=data['country']
+    country=data['iso_country'],
     continent=data['continent'],
-    wikipedia=data['wikipedia'],
-    website=data['website'])
-    """
+    wikipedia=data['wikipedia_link'],
+    website=data['home_link'])
     return result

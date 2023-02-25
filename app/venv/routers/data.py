@@ -21,16 +21,20 @@ router = APIRouter(
 
 @router.get('/get-info/{icao}', response_model=showAirportData)
 async def getAirportInfo(icao, getCurrentUser: userModel = Depends(oauth2.getCurrentUser)):
-    cache = redisCache.getData(icao)
+    user = await getCurrentUser
+    username = user['username']
+    cache = redisCache.getData(username+icao)
 
     if cache is None:
-        data = airport.getAirportInfo(icao)
-        redisCache.setData(icao, json.dumps(data))
+        data = airport.getAirportInfo(icao, username)
+        redisCache.setData(username+icao, data.json())
         print("Data received from API")
-        return data
-    
-    print("Data received from cache")
-    return json.loads(cache)
+        data = json.loads(data.json())
+    else:
+        print("Data received from cache")
+        data = json.loads(cache)
+
+    return data
     
 
 @router.post('/add-to-favorites')
@@ -49,7 +53,6 @@ async def addToFavorites(icao, getCurrentUser: userModel = Depends(oauth2.getCur
         print("Data received from cache.")
         data = json.loads(cache)
 
-    print(data)
     result = await database.addToFavorites(data)
     if not result: raise HTTPException(400)
     return result

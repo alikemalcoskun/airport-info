@@ -72,7 +72,7 @@ class oauth2:
         )
 
         tokenData = Token.verifyToken(token, credentialsException)
-        user = oauth2.getUser(email=tokenData.email)
+        user = await oauth2.getUser(email=tokenData.email)
         if user is None:
             raise credentialsException
         return user
