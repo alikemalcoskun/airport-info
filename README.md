@@ -1,6 +1,5 @@
 # airport-info
 
-A RestAPI that allows users to get airport data from an open API service by ICAO code and add it to their favorites list.
 
 ![screenshot_1](https://user-images.githubusercontent.com/74024655/221414801-8145f780-f7ab-43e8-a318-0a254b0485ce.png)
 ![screenshot_2](https://user-images.githubusercontent.com/74024655/221415060-017b05bf-1930-4a39-b542-95d9b4453cda.png)
