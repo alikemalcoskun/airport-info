@@ -1,7 +1,5 @@
 from model import airportData
-from urllib import response
 import requests
-import json
 from dotenv import load_dotenv
 import os
 from fastapi import HTTPException

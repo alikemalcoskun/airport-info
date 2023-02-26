@@ -1,5 +1,5 @@
 import motor.motor_asyncio
-from model import airportData, userModel
+from model import airportData
 from dotenv import load_dotenv
 import os
 

@@ -1,4 +1,3 @@
-import redis
 import redisConfig
 
 r = redisConfig.redisConnect()

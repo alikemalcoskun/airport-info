@@ -4,7 +4,7 @@ from model import userModel, showAirportData
 import redisCache
 import airport
 import database
-from auth import Hash, Token, oauth2
+from auth import oauth2
 
 
 
@@ -21,7 +21,7 @@ router = APIRouter(
 
 @router.get('/get-info/{icao}', response_model=showAirportData)
 async def getAirportInfo(icao, getCurrentUser: userModel = Depends(oauth2.getCurrentUser)):
-    user = await getCurrentUser
+    user = getCurrentUser
     username = user['username']
     cache = redisCache.getData(username+icao)
 
@@ -39,7 +39,7 @@ async def getAirportInfo(icao, getCurrentUser: userModel = Depends(oauth2.getCur
 
 @router.post('/add-to-favorites')
 async def addToFavorites(icao, getCurrentUser: userModel = Depends(oauth2.getCurrentUser)):
-    user = await getCurrentUser
+    user = getCurrentUser
     username = user['username']
     cache = redisCache.getData(username+icao)
 
@@ -60,7 +60,7 @@ async def addToFavorites(icao, getCurrentUser: userModel = Depends(oauth2.getCur
 
 @router.get('/find-in-favorites/{icao}')
 async def findInFavorites(icao, getCurrentUser: userModel = Depends(oauth2.getCurrentUser)):
-    user = await getCurrentUser
+    user = getCurrentUser
     username = user['username']
     cache = redisCache.getData(username+icao)
     if cache is None:
@@ -75,7 +75,7 @@ async def findInFavorites(icao, getCurrentUser: userModel = Depends(oauth2.getCu
 
 @router.get('/get-all-data')
 async def getAllData(getCurrentUser: userModel = Depends(oauth2.getCurrentUser)):
-    user = await getCurrentUser
+    user = getCurrentUser
     username = user['username']
     data = await database.getAllData(username)
     if not data: raise HTTPException(404)
@@ -84,7 +84,7 @@ async def getAllData(getCurrentUser: userModel = Depends(oauth2.getCurrentUser))
 
 @router.delete('/remove-from-favorites/{icao}')
 async def removeFromFavorites(icao, getCurrentUser: userModel = Depends(oauth2.getCurrentUser)):
-    user = await getCurrentUser
+    user = getCurrentUser
     username = user['username']
     data = await database.removeFromFavorites(username, icao)
     if not data: raise HTTPException(404)
@@ -93,7 +93,7 @@ async def removeFromFavorites(icao, getCurrentUser: userModel = Depends(oauth2.g
 
 @router.delete('/remove-all-data')
 async def removeFromFavorites(getCurrentUser: userModel = Depends(oauth2.getCurrentUser)):
-    user = await getCurrentUser
+    user = getCurrentUser
     username = user['username']
     data = await database.deleteAllData(username)
     if not data: raise HTTPException(404)
